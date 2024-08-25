@@ -1,6 +1,5 @@
 package com.example.CinemaManagement.service.implementations;
 
-import com.example.CinemaManagement.dto.CategoryDTO;
 import com.example.CinemaManagement.entity.Category;
 import com.example.CinemaManagement.entity.Movie;
 import com.example.CinemaManagement.repository.CategoryRepository;
@@ -9,12 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryService implements ICategoryService {
@@ -59,7 +54,17 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public ResponseEntity<String> delete(Category category) {
-        return null;
+        Category existingCategory = this.getById(category);
+        if (existingCategory != null) {
+            try {
+                categoryRepository.delete(existingCategory);
+                return ResponseEntity.status(HttpStatus.OK).body("Category deleted successfully!");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete seat due to: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found with ID: " + category.getCategoryId());
+        }
     }
 
     @Override

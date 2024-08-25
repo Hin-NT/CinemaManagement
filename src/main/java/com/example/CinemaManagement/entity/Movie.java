@@ -84,5 +84,19 @@ public class Movie {
         this.label = label;
     }
 
-    public Movie(String title, String description, String poster) {}
+    public Movie(int movieId, String title, int duration, String trailer, String description, String director, String producer, String cast, LocalDate releaseDate, LocalDate endDate, MovieStatus status, Set<Category> categories, Label label) {
+        this.movieId = movieId;
+        this.title = title;
+        this.duration = duration;
+        this.trailer = trailer;
+        this.description = description;
+        this.director = director;
+        this.producer = producer;
+        this.cast = cast;
+        this.releaseDate = releaseDate;
+        this.endDate = endDate;
+        this.status = status;
+        this.categories = categories;
+        this.label = label;
+    }
 }

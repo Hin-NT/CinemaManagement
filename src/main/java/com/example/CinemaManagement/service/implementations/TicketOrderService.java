@@ -2,9 +2,12 @@ package com.example.CinemaManagement.service.implementations;
 
 import com.example.CinemaManagement.config.Utils;
 import com.example.CinemaManagement.entity.Seat;
+import com.example.CinemaManagement.entity.TheaterSeat;
 import com.example.CinemaManagement.entity.TicketOrder;
 import com.example.CinemaManagement.entity.TicketOrderDetail;
+import com.example.CinemaManagement.enums.SeatStatus;
 import com.example.CinemaManagement.repository.SeatRepository;
+import com.example.CinemaManagement.repository.TheaterSeatRepository;
 import com.example.CinemaManagement.repository.TicketOrderDetailRepository;
 import com.example.CinemaManagement.repository.TicketOrderRepository;
 import com.example.CinemaManagement.service.interfaces.ITicketOrderService;
@@ -27,7 +30,10 @@ public class TicketOrderService implements ITicketOrderService {
     TicketOrderDetailRepository ticketOrderDetailRepository;
 
     @Autowired
-    SeatRepository seatRepository;
+    TheaterSeatRepository theaterSeatRepository;
+
+    @Autowired
+    TheaterSeatService theaterSeatService;
 
     @Override
     public List<TicketOrder> getAll() {
@@ -50,21 +56,24 @@ public class TicketOrderService implements ITicketOrderService {
             TicketOrder ticketOrderData = new TicketOrder();
             ticketOrderData.setStatus(ticketOrder.getStatus());
             ticketOrderData.setOrderDate(LocalDateTime.now());
-            ticketOrderData.setCode(Utils.encrypt(LocalDateTime.now() + ticketOrder.getTicketOrderDetailList().get(0).getSeat().getSeatId()));
+            ticketOrderData.setCode(Utils.encrypt(LocalDateTime.now() + String.valueOf(ticketOrder.getTicketOrderDetailList().get(0).getTheaterSeat().getId())));
             ticketOrderData.setAccount(ticketOrder.getAccount());
             ticketOrderData.setShowtime(ticketOrder.getShowtime());
             TicketOrder ticketOrderSaved = ticketOrderRepository.save(ticketOrderData);
 
             List<TicketOrderDetail> ticketOrderDetailList = ticketOrder.getTicketOrderDetailList().stream()
                             .map(detail -> {
-                                Seat seat = seatRepository.findById(detail.getSeat().getSeatId())
+                                TheaterSeat theaterSeat = theaterSeatRepository.findById(detail.getTheaterSeat().getId())
                                         .orElseThrow(() -> new RuntimeException("Seat Not Found"));
 
-                                TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId = new TicketOrderDetail.TicketOrderDetailId(ticketOrderSaved.getOrderId(), seat.getSeatId());
+                                theaterSeat.setSeatStatus(SeatStatus.CHOOSING);
+                                theaterSeatRepository.save(theaterSeat);
+
+                                TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId = new TicketOrderDetail.TicketOrderDetailId(ticketOrderSaved.getOrderId(), theaterSeat.getId());
 
                                 TicketOrderDetail ticketOrderDetail = new TicketOrderDetail();
                                 ticketOrderDetail.setId(ticketOrderDetailId);
-                                ticketOrderDetail.setSeat(seat);
+                                ticketOrderDetail.setTheaterSeat(theaterSeat);
                                 ticketOrderDetail.setTicketOrder(ticketOrderSaved);
                                 ticketOrderDetail.setPrice(detail.getPrice());
 
@@ -91,14 +100,14 @@ public class TicketOrderService implements ITicketOrderService {
 
             List<TicketOrderDetail> ticketOrderDetailList = ticketOrder.getTicketOrderDetailList().stream()
                     .map(detail -> {
-                        Seat seat = seatRepository.findById(detail.getSeat().getSeatId())
+                        TheaterSeat theaterSeat = theaterSeatRepository.findById(detail.getTheaterSeat().getId())
                                 .orElseThrow(() -> new RuntimeException("Seat Not Found"));
 
-                        TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId = new TicketOrderDetail.TicketOrderDetailId(ticketOrder.getOrderId(), seat.getSeatId());
+                        TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId = new TicketOrderDetail.TicketOrderDetailId(ticketOrder.getOrderId(), theaterSeat.getId());
 
                         TicketOrderDetail ticketOrderDetail = new TicketOrderDetail();
                         ticketOrderDetail.setId(ticketOrderDetailId);
-                        ticketOrderDetail.setSeat(seat);
+                        ticketOrderDetail.setTheaterSeat(theaterSeat);
                         ticketOrderDetail.setTicketOrder(ticketOrderData);
                         ticketOrderDetail.setPrice(detail.getPrice());
 

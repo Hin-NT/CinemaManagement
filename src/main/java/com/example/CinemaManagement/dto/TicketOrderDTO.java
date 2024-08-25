@@ -55,9 +55,9 @@ public class TicketOrderDTO {
 //                            .collect(Collectors.toList()) : null;
 //        }
 
-        this.tickets = ticketOrder.getTicketOrderDetailList() != null ?
-                ticketOrder.getTicketOrderDetailList().stream()
-                        .map(ticketOrderDetail -> ticketOrderDetail.getSeat().getSeatId()).collect(Collectors.toSet()) : null;
+//        this.tickets = ticketOrder.getTicketOrderDetailList() != null ?
+//                ticketOrder.getTicketOrderDetailList().stream()
+//                        .map(ticketOrderDetail -> ticketOrderDetail.getSeat().getSeatId()).collect(Collectors.toSet()) : null;
 
         this.totalOrder = ticketOrder.getTicketOrderDetailList() != null ?
                 ticketOrder.getTicketOrderDetailList().stream()

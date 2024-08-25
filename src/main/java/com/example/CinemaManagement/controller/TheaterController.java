@@ -29,7 +29,7 @@ public class TheaterController {
     }
 
     // Create a new theater
-    @PostMapping("/save")
+    @PostMapping("")
     public ResponseEntity<String> createTheater(@RequestBody Theater theater) {
         return theaterService.add(theater);
     }
@@ -41,13 +41,14 @@ public class TheaterController {
         createTheater.setTheaterId(id);
 
         Theater theater = theaterService.getById(createTheater);
-        TheaterDTO theaterDTO = new TheaterDTO(theater);
-
-        return ResponseEntity.ok(theaterDTO);
+        if (theater != null) {
+            return ResponseEntity.ok(new TheaterDTO(theater));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // Update an existing theater
-    @PutMapping("/{id}")
+    @PutMapping("")
     public ResponseEntity<String> updateTheater(@RequestBody Theater theater) {
         return theaterService.update(theater);
     }

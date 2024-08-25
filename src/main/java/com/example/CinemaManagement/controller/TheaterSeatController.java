@@ -1,6 +1,7 @@
 package com.example.CinemaManagement.controller;
 
 import com.example.CinemaManagement.dto.TheaterSeatDTO;
+import com.example.CinemaManagement.entity.Theater;
 import com.example.CinemaManagement.entity.TheaterSeat;
 import com.example.CinemaManagement.enums.SeatStatus;
 import com.example.CinemaManagement.enums.SeatType;
@@ -50,15 +51,15 @@ public class TheaterSeatController {
 
     // Fetch a theater by its ID
     @GetMapping("/{id}")
-    public ResponseEntity<TheaterSeatDTO> getTheaterById(@PathVariable int id) {
+    public ResponseEntity<List<TheaterSeatDTO>> getTheaterById(@PathVariable int id) {
 
         TheaterSeat createTheater = new TheaterSeat();
         createTheater.setId(id);
 
-        TheaterSeat theater = theaterSeatService.getById(createTheater);
-        TheaterSeatDTO theaterDTO = new TheaterSeatDTO(theater);
+        List<TheaterSeat> theaterSeatList = theaterSeatService.findSeatsByTheater(id);
+        List<TheaterSeatDTO> theaterSeatListDTO = theaterSeatList.stream().map(TheaterSeatDTO::new).toList();
 
-        return ResponseEntity.ok(theaterDTO);
+        return ResponseEntity.ok(theaterSeatListDTO);
     }
 
     // Update an existing theater

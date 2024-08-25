@@ -61,23 +61,10 @@ public class MovieService implements IMovieService {
         Optional<Movie> movieOptional = movieRepository.findById(movie.getMovieId());
         if (movieOptional.isPresent()) {
             try {
-                Movie movieToUpdate = movieOptional.get();
                 if(posterFile != null) {
                     String imageUrl = cloudinaryService.uploadImage(posterFile);
-                    movieToUpdate.setPoster(imageUrl);
+                    movie.setPoster(imageUrl);
                 }
-                movieToUpdate.setTitle(movie.getTitle());
-                movieToUpdate.setDuration(movie.getDuration());
-                movieToUpdate.setTrailer(movie.getTrailer());
-                movieToUpdate.setDescription(movie.getDescription());
-                movieToUpdate.setDirector(movie.getDirector());
-                movieToUpdate.setCast(movie.getCast());
-                movieToUpdate.setProducer(movie.getProducer());
-                movieToUpdate.setReleaseDate(movie.getReleaseDate());
-                movieToUpdate.setEndDate(movie.getEndDate());
-                movieToUpdate.setCategories(movie.getCategories());
-                movieToUpdate.setLabel(movie.getLabel());
-                movieToUpdate.setStatus(movie.getStatus());
                 movieRepository.save(movie);
                 return ResponseEntity.status(HttpStatus.OK).body("Movie updated successfully!");
             } catch (Exception e) {
@@ -87,6 +74,38 @@ public class MovieService implements IMovieService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Movie not found!");
         }
     }
+
+//    @Override
+//    public ResponseEntity<String> update(Movie movie, MultipartFile posterFile) {
+//        Optional<Movie> movieOptional = movieRepository.findById(movie.getMovieId());
+//        if (movieOptional.isPresent()) {
+//            try {
+//                Movie movieToUpdate = movieOptional.get();
+//                if(posterFile != null) {
+//                    String imageUrl = cloudinaryService.uploadImage(posterFile);
+//                    movieToUpdate.setPoster(imageUrl);
+//                }
+//                movieToUpdate.setTitle(movie.getTitle());
+//                movieToUpdate.setDuration(movie.getDuration());
+//                movieToUpdate.setTrailer(movie.getTrailer());
+//                movieToUpdate.setDescription(movie.getDescription());
+//                movieToUpdate.setDirector(movie.getDirector());
+//                movieToUpdate.setCast(movie.getCast());
+//                movieToUpdate.setProducer(movie.getProducer());
+//                movieToUpdate.setReleaseDate(movie.getReleaseDate());
+//                movieToUpdate.setEndDate(movie.getEndDate());
+//                movieToUpdate.setCategories(movie.getCategories());
+//                movieToUpdate.setLabel(movie.getLabel());
+//                movieToUpdate.setStatus(movie.getStatus());
+//                movieRepository.save(movie);
+//                return ResponseEntity.status(HttpStatus.OK).body("Movie updated successfully!");
+//            } catch (Exception e) {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed  to update movie due to: " + e.getMessage());
+//            }
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Movie not found!");
+//        }
+//    }
 
     @Override
     public ResponseEntity<String> delete(Movie movie) {
