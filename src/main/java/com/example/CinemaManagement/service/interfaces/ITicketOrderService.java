@@ -1,0 +1,15 @@
+package com.example.CinemaManagement.service.interfaces;
+
+import com.example.CinemaManagement.entity.TicketOrder;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+
+public interface ITicketOrderService extends IService<TicketOrder> {
+    List<TicketOrder> getByAccountId(int accountId);
+
+    ResponseEntity<Double> getRevenueByChoose(int choose, int time);
+
+    ResponseEntity<Double> getRevenueByDateBetween(String startTime, String endTime);
+
+}
