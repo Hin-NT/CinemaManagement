@@ -20,6 +20,11 @@ public class CategoryController {
     @Autowired
     private ICategoryService categoryService;
 
+    @PostMapping
+    public ResponseEntity<String> createCategory(@RequestBody Category category) {
+        return categoryService.add(category);
+    }
+
     @GetMapping("")
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         List<Category> categories = categoryService.getAll();

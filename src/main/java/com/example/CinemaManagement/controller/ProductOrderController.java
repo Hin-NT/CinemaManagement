@@ -19,7 +19,7 @@ public class ProductOrderController {
     @Autowired
     private IProductOrderService productOrderService;
 
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @GetMapping("")
     public ResponseEntity<List<ProductOrderDTO>> getAllProductOrders() {
         List<ProductOrder> products = productOrderService.getAll();
@@ -35,30 +35,31 @@ public class ProductOrderController {
         return ResponseEntity.ok(productOrderDTOList);
     }
 
-    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE')")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @GetMapping("/{orderId}")
-    public ResponseEntity<ProductOrderDTO> getProductOrderById(@PathVariable String order) {
+    public ResponseEntity<ProductOrderDTO> getProductOrderById(@PathVariable int orderId) {
         ProductOrder createProductOrder = new ProductOrder();
-        createProductOrder.setOrderProductId(Integer.parseInt(order));
+        createProductOrder.setOrderProductId(orderId);
         ProductOrder product = productOrderService.getById(createProductOrder);
         return ResponseEntity.ok(new ProductOrderDTO(product, 1));
     }
-    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE')")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @PostMapping("")
     public ResponseEntity<String> createProductOrder(@Valid @RequestBody ProductOrder product) {
         return productOrderService.add(product);
     }
 
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
-    @PutMapping("/{orderId}")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
+    @PutMapping("/update")
     public ResponseEntity<String> updateProduct(@Valid @RequestBody ProductOrder product) {
         return productOrderService.update(product);
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<String> deleteOrder(@PathVariable String order) {
+    public ResponseEntity<String> deleteOrder(@PathVariable String orderId) {
         ProductOrder createProduct = new ProductOrder();
-        createProduct.setOrderProductId(Integer.parseInt(order));
+        createProduct.setOrderProductId(Integer.parseInt(orderId));
         return productOrderService.delete(createProduct);
     }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CloudinaryConfig {
+
     @Bean
     public Cloudinary cloudinary() {
         return new Cloudinary(ObjectUtils.asMap(
@@ -16,4 +17,5 @@ public class CloudinaryConfig {
                 "secure", true
         ));
     }
+
 }

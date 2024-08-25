@@ -11,6 +11,7 @@ import java.util.Map;
 
 @Service
 public class CloudinaryService {
+
     private final Cloudinary cloudinary;
 
     @Autowired
@@ -22,4 +23,5 @@ public class CloudinaryService {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
         return uploadResult.get("url").toString();
     }
+
 }

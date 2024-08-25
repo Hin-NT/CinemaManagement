@@ -23,17 +23,17 @@ public class AccountController {
     private IAccountService accountService;
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<AccountDTO>> getAllAccount() {
         List<Account> accounts = accountService.getAll();
         List<AccountDTO> accountDTOList = accounts.stream().map(AccountDTO::new).collect(Collectors.toList());
         return ResponseEntity.ok(accountDTOList);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AccountDTO> getAccountById(@PathVariable int id) {
+    @GetMapping("/{accountId}")
+    public ResponseEntity<AccountDTO> getAccountById(@PathVariable int accountId) {
         Account createAccount = new Account();
-        createAccount.setAccountId(id);
+        createAccount.setAccountId(accountId);
         Account account = accountService.getById(createAccount);
 
         AccountDTO accountDTO = new AccountDTO(account);
@@ -62,7 +62,6 @@ public class AccountController {
         return accountService.register(account);
     }
 
-    //    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
     @PostMapping("/add")
     public ResponseEntity<String> createAccByAdmin(@RequestBody Account account) {
         if (account == null) {
@@ -86,10 +85,10 @@ public class AccountController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteAccount(@PathVariable int id) {
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<String> deleteAccount(@PathVariable int accountId) {
         Account createAccount = new Account();
-        createAccount.setAccountId(id);
+        createAccount.setAccountId(accountId);
 
         return accountService.delete(createAccount);
     }

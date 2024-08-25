@@ -21,16 +21,16 @@ public class TicketOrderDetail {
     private double price;
 
     @ManyToOne
-    @MapsId("seatId")
-    @JoinColumn(name = "seat_id", insertable = false, updatable = false)
-    private Seat seat;
+    @MapsId("theaterSeatId") // Use the correct field name for mapping
+    @JoinColumn(name = "theater_seat_id", insertable = false, updatable = false) // Adjusted to match the field name
+    private TheaterSeat theaterSeat;
 
     @ManyToOne
-    @MapsId("orderId")
+    @MapsId("orderId") // Correct mapping
     @JoinColumn(name = "order_id", insertable = false, updatable = false)
     private TicketOrder ticketOrder;
 
-    public TicketOrderDetail(int orderId, String seatId, double price) {
+    public TicketOrderDetail(int orderId, int seatId, double price) {
         this.id = new TicketOrderDetailId(orderId, seatId);
         this.price = price;
     }
@@ -40,14 +40,14 @@ public class TicketOrderDetail {
         @Column(name = "order_id")
         private int orderId;
 
-        @Column(name = "seat_id")
-        private String seatId;
+        @Column(name = "theater_seat_id")
+        private int theaterSeatId;
 
         public TicketOrderDetailId() {}
 
-        public TicketOrderDetailId(int orderId, String seatId) {
+        public TicketOrderDetailId(int orderId, int theaterSeatId) {
             this.orderId = orderId;
-            this.seatId = seatId;
+            this.theaterSeatId = theaterSeatId;
         }
 
         public int getOrderId() {
@@ -58,12 +58,12 @@ public class TicketOrderDetail {
             this.orderId = orderId;
         }
 
-        public String getSeatId() {
-            return seatId;
+        public int getSeatId() {
+            return theaterSeatId;
         }
 
-        public void setSeatId(String seatId) {
-            this.seatId = seatId;
+        public void setSeatId(int seatId) {
+            this.theaterSeatId = seatId;
         }
 
         @Override
@@ -71,13 +71,13 @@ public class TicketOrderDetail {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             TicketOrderDetailId that = (TicketOrderDetailId) o;
-            return orderId == that.orderId && seatId.equals(that.seatId);
+            return orderId == that.orderId && theaterSeatId == that.theaterSeatId; // Corrected logic
         }
 
         @Override
         public int hashCode() {
             int result = Integer.hashCode(orderId);
-            result = 31 * result + seatId.hashCode();
+            result = 31 * result + Integer.hashCode(theaterSeatId); // Corrected method
             return result;
         }
     }

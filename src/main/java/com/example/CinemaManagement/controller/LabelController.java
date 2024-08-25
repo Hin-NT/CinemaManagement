@@ -16,6 +16,7 @@ import java.util.List;
 @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
 @RequestMapping("/api/v1/labels")
 public class LabelController {
+
     @Autowired
     private ILabelService labelService;
 

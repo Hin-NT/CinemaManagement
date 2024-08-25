@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface IAccountService extends IService<Account> {
+
     ResponseEntity<String> register(Account account);
 
     ResponseEntity<String> createAccByAdmin(Account account);

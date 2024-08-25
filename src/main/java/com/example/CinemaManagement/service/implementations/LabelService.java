@@ -1,6 +1,5 @@
 package com.example.CinemaManagement.service.implementations;
 
-import com.example.CinemaManagement.dto.LabelDTO;
 import com.example.CinemaManagement.entity.Label;
 import com.example.CinemaManagement.repository.LabelRepository;
 import com.example.CinemaManagement.service.interfaces.ILabelService;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class LabelService implements ILabelService {

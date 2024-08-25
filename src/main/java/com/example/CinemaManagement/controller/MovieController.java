@@ -86,9 +86,25 @@ public class MovieController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-    @PutMapping("/{movieId}")
-    public ResponseEntity<String> updateMovie(@Valid @RequestBody Movie movie) {
-        return movieService.update(movie);
+    @PutMapping("/update")
+    public ResponseEntity<String> updateMovie(
+            @RequestParam("movieId") int movieId,
+            @RequestParam("title") String title,
+            @RequestParam("duration") int duration,
+            @RequestParam("posterFile") MultipartFile posterFile,
+            @RequestParam("trailer") String trailer,
+            @RequestParam("description") String description,
+            @RequestParam("director") String director,
+            @RequestParam("cast") String cast,
+            @RequestParam("producer") String producer,
+            @RequestParam("releaseDate") LocalDate releaseDate,
+            @RequestParam("endDate") LocalDate endDate,
+            @RequestParam("categories") Set<Category> categories,
+            @RequestParam("label") Label label,
+            @RequestParam("status") MovieStatus status)
+    {
+        Movie movie = new Movie(movieId, title, duration, trailer, description, director, cast, producer, releaseDate, endDate, status, categories, label);
+        return movieService.update(movie, posterFile);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")

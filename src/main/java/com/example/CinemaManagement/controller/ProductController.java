@@ -28,9 +28,9 @@ public class ProductController {
     }
 
     @GetMapping("/public/{productId}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable int movieId) {
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable int productId) {
         Product createProduct = new Product();
-        createProduct.setProductId(movieId);
+        createProduct.setProductId(productId);
         Product product = productService.getById(createProduct);
         return ResponseEntity.ok(new ProductDTO(product));
     }
@@ -49,13 +49,13 @@ public class ProductController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-    @PutMapping("/{id}")
+    @PutMapping("/update")
     public ResponseEntity<String> updateProduct(@Valid @RequestBody Product product) {
         return productService.update(product);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{product}")
     public ResponseEntity<String> deleteProduct(@PathVariable int product) {
         Product createProduct = new Product();
         createProduct.setProductId(product);

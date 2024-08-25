@@ -39,7 +39,7 @@ public class TicketOrderController {
         return ResponseEntity.ok(ticketOrderDTOList);
     }
 
-    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE')")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @PostMapping("")
     public ResponseEntity<String> createTicketOrder(@RequestBody TicketOrder ticketOrder) {
         return ticketOrderService.add(ticketOrder);
@@ -57,7 +57,7 @@ public class TicketOrderController {
     }
 
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     public ResponseEntity<String> updateTicketOrder(@RequestBody TicketOrder ticketOrder) {
         return ticketOrderService.update(ticketOrder);
     }

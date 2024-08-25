@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+
     private static final String PASSWORD_PATTERN =
             "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{12,}$";
 
@@ -21,4 +22,5 @@ public class Utils {
     public static String encrypt(String keyword) {
         return encoder.encode(keyword);
     }
+
 }

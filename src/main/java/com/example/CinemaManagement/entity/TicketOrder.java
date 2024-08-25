@@ -39,6 +39,9 @@ public class TicketOrder {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "payment_deadline")
+    private LocalDateTime paymentDeadline;
+
     @OneToMany(mappedBy = "ticketOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketOrderDetail> ticketOrderDetailList;
 
