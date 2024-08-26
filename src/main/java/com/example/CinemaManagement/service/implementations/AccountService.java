@@ -45,9 +45,11 @@ public class AccountService implements IAccountService {
     @Autowired
     ApplicationContext context;
 
+    //Register a user account
     @Override
     public ResponseEntity<String> register(Account account) {
         try {
+
             if(accountRepository.findAccountByEmail(account.getEmail()) == null) {
                 account.setPassword(Utils.encrypt(account.getPassword()));
                 if(account.getRoles() == null) {
@@ -63,10 +65,13 @@ public class AccountService implements IAccountService {
         }
     }
 
+    //Register Admin account
     @Override
     public ResponseEntity<String> createAccByAdmin(Account account) {
         try {
+            // Check if email does not exist then register
             if(accountRepository.findAccountByEmail(account.getEmail()) == null) {
+                // Encrypt password
                 account.setPassword(Utils.encrypt(account.getPassword()));
                 accountRepository.save(account);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Account created successfully!");
@@ -78,6 +83,7 @@ public class AccountService implements IAccountService {
         }
     }
 
+    //Accounts are based on email and password.
     @Override
     public AccountDTO verify(Account account) {
         Authentication auth =
@@ -90,16 +96,19 @@ public class AccountService implements IAccountService {
         return null;
     }
 
+    //Search account by username
     @Override
     public List<Account> findAccountByUsername(String username) {
         return accountRepository.findAccountByUsername(username);
     }
 
+    //Get a list of all accounts
     @Override
     public List<Account> getAll() {
         return accountRepository.findAll();
     }
 
+    //Update account information
     @Override
     public ResponseEntity<String> update(Account account) {
         Optional<Account> existingAccount = accountRepository.findById(account.getAccountId());
@@ -125,6 +134,7 @@ public class AccountService implements IAccountService {
         }
     }
 
+    //Get account information by ID
     @Override
     public Account getById(Account account) {
         return accountRepository.findById(account.getAccountId()).orElse(null);
@@ -135,6 +145,7 @@ public class AccountService implements IAccountService {
         return null;
     }
 
+    //Delete account
     @Override
     public ResponseEntity<String> delete(Account account) {
         Account exsitedAccount = this.getById(account);
@@ -151,13 +162,14 @@ public class AccountService implements IAccountService {
         }
     }
 
-    //1. Hiển thị bảng lương của tất cả nhân viên trong tháng hiện tại (user / ngày công / số giờ làm / tổng số lương)
+    //Calculate and display payroll of all employees in the current month
+    //Including number of working days, number of working hours, and total salary
     public List<PayRollDTO> getPayrollAllEmployees() {
-        YearMonth currentMonth = YearMonth.now(); //Lấy ra tháng và năm hiện tại
-        LocalDate startOfMonth = currentMonth.atDay(1); // Lấy ngày đầu tiên của tháng hiện tại
-        LocalDate endOfMonth = currentMonth.atEndOfMonth(); // Lấy ngày cuối cùng của tháng hiện tại
+        YearMonth currentMonth = YearMonth.now(); //Get the current month and year
+        LocalDate startOfMonth = currentMonth.atDay(1); // Get the first day of the current month
+        LocalDate endOfMonth = currentMonth.atEndOfMonth(); // Get the last day of the current month
 
-        //  Lấy danh sách tất cả các tài khoản là nhân viên / admin
+        // Get a list of all staff / admin accounts
         List<Account> employees = accountRepository.findAll().stream()
                 .filter(account -> account.getRoles() == AccountType.ROLE_EMPLOYEE ||
                         account.getRoles() == AccountType.ROLE_ADMINISTRATOR)
@@ -197,7 +209,7 @@ public class AccountService implements IAccountService {
         return payRollDTOList;
     }
 
-    //2. Hiển thị bảng lượng của một nhân viên (user / ngày công / số giờ làm / tổng số lương)
+    //Calculate and display the payroll for a specific employee for the current month
     public PayRollDTO getPayrollForEmployee(Account account) {
         YearMonth currentMonth = YearMonth.now();
         LocalDate startOfMonth = currentMonth.atDay(1);
@@ -230,7 +242,7 @@ public class AccountService implements IAccountService {
         return new PayRollDTO(employee.getAccountId(), employee.getFullName(), totalDaysWorked, totalHoursWorked, totalSalary, hoursWorkerList);
     }
 
-    // 3. Hiển thị tổng lương của tất cả nhân viên
+    // 3. Display total salary of all employees
     public double getTotalSalaryForAllEmployees() {
         YearMonth currentMonth = YearMonth.now();
         LocalDate startOfMonth = currentMonth.atDay(1);

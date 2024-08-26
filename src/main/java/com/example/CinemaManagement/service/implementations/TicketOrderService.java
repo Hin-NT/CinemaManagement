@@ -209,7 +209,6 @@ public class TicketOrderService implements ITicketOrderService {
 //        }
 //    }
 
-
     @Override
     public ResponseEntity<String> delete(TicketOrder ticketOrder) {
         TicketOrder existingTicketOrder = this.getById(ticketOrder);

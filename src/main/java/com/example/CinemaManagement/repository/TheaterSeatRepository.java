@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TheaterSeatRepository extends JpaRepository<TheaterSeat, Integer> {
+
     @Query("SELECT ts FROM TheaterSeat ts WHERE ts.theater.theaterId = :theaterId AND ts.seatType = :seatType")
     List<TheaterSeat> findSeatsByType(@Param("theaterId") Integer theaterId, @Param("seatType") SeatType seatType);
 
@@ -19,4 +20,5 @@ public interface TheaterSeatRepository extends JpaRepository<TheaterSeat, Intege
 
     @Query(value = "SELECT * FROM tbl_theater_seat WHERE theater_id = %:theaterId%", nativeQuery = true)
     List<TheaterSeat> findSeatsByTheaterId(int theaterId);
+
 }
