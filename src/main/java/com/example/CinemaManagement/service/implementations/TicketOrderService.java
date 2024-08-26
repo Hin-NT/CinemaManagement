@@ -90,39 +90,40 @@ public class TicketOrderService implements ITicketOrderService {
 
     @Override
     public ResponseEntity<String> update(TicketOrder ticketOrder) {
-        try {
-            TicketOrder ticketOrderData = ticketOrderRepository.findById(ticketOrder.getOrderId())
-                    .orElseThrow(() -> new RuntimeException("TicketOrder Not Found"));
-            ticketOrderData.setStatus(ticketOrder.getStatus());
-            ticketOrderData.setOrderDate(LocalDateTime.now());
-            ticketOrderData.setAccount(ticketOrder.getAccount());
-            ticketOrderData.setShowtime(ticketOrder.getShowtime());
-
-            ticketOrderDetailRepository.deleteAll(ticketOrderData.getTicketOrderDetailList());
-
-            List<TicketOrderDetail> ticketOrderDetailList = ticketOrder.getTicketOrderDetailList().stream()
-                    .map(detail -> {
-                        TheaterSeat theaterSeat = theaterSeatRepository.findById(detail.getTheaterSeat().getId())
-                                .orElseThrow(() -> new RuntimeException("Seat Not Found"));
-
-                        TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId = new TicketOrderDetail.TicketOrderDetailId(ticketOrder.getOrderId(), theaterSeat.getId());
-
-                        TicketOrderDetail ticketOrderDetail = new TicketOrderDetail();
-                        ticketOrderDetail.setId(ticketOrderDetailId);
-                        ticketOrderDetail.setTheaterSeat(theaterSeat);
-                        ticketOrderDetail.setTicketOrder(ticketOrderData);
-                        ticketOrderDetail.setPrice(detail.getPrice());
-
-                        return ticketOrderDetail;
-                    }).collect(Collectors.toList());
-            ticketOrderDetailRepository.saveAll(ticketOrderDetailList);
-            ticketOrderData.getTicketOrderDetailList().clear();
-            ticketOrderData.getTicketOrderDetailList().addAll(ticketOrderDetailList);
-            ticketOrderRepository.save(ticketOrderData);
-            return ResponseEntity.status(HttpStatus.OK).body("TicketOrder updated successfully!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update ticket order due to: " + e.getMessage());
-        }
+//        try {
+//            TicketOrder ticketOrderData = ticketOrderRepository.findById(ticketOrder.getOrderId())
+//                    .orElseThrow(() -> new RuntimeException("TicketOrder Not Found"));
+//            ticketOrderData.setStatus(ticketOrder.getStatus());
+//            ticketOrderData.setOrderDate(LocalDateTime.now());
+//            ticketOrderData.setAccount(ticketOrder.getAccount());
+//            ticketOrderData.setShowtime(ticketOrder.getShowtime());
+//
+//            ticketOrderDetailRepository.deleteAll(ticketOrderData.getTicketOrderDetailList());
+//
+//            List<TicketOrderDetail> ticketOrderDetailList = ticketOrder.getTicketOrderDetailList().stream()
+//                    .map(detail -> {
+//                        TheaterSeat theaterSeat = theaterSeatRepository.findById(detail.getTheaterSeat().getId())
+//                                .orElseThrow(() -> new RuntimeException("Seat Not Found"));
+//
+//                        TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId = new TicketOrderDetail.TicketOrderDetailId(ticketOrder.getOrderId(), theaterSeat.getId());
+//
+//                        TicketOrderDetail ticketOrderDetail = new TicketOrderDetail();
+//                        ticketOrderDetail.setId(ticketOrderDetailId);
+//                        ticketOrderDetail.setTheaterSeat(theaterSeat);
+//                        ticketOrderDetail.setTicketOrder(ticketOrderData);
+//                        ticketOrderDetail.setPrice(detail.getPrice());
+//
+//                        return ticketOrderDetail;
+//                    }).collect(Collectors.toList());
+//            ticketOrderDetailRepository.saveAll(ticketOrderDetailList);
+//            ticketOrderData.getTicketOrderDetailList().clear();
+//            ticketOrderData.getTicketOrderDetailList().addAll(ticketOrderDetailList);
+//            ticketOrderRepository.save(ticketOrderData);
+//            return ResponseEntity.status(HttpStatus.OK).body("TicketOrder updated successfully!");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update ticket order due to: " + e.getMessage());
+//        }
+        return null;
     }
 
 //    @Override
