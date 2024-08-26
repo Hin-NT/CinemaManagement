@@ -21,7 +21,7 @@ public class TicketOrderController {
     @Autowired
     private ITicketOrderService ticketOrderService;
 
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @GetMapping("")
     public ResponseEntity<List<TicketOrderDTO>> getAllTicketOrders() {
         List<TicketOrder> ticketOrderList = ticketOrderService.getAll();
@@ -56,7 +56,7 @@ public class TicketOrderController {
         return ResponseEntity.ok(ticketOrderDTO);
     }
 
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @PutMapping("/update")
     public ResponseEntity<String> updateTicketOrder(@RequestBody TicketOrder ticketOrder) {
         return ticketOrderService.update(ticketOrder);
@@ -81,4 +81,8 @@ public class TicketOrderController {
         return ticketOrderService.getRevenueByChoose(choose, time);
     }
 
+    @PostMapping("/confirm")
+    public ResponseEntity<String> confirmTicketOrder(@RequestParam int orderId) {
+        return ticketOrderService.confirmOrderTicker(orderId);
+    }
 }

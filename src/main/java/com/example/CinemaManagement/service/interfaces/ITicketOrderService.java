@@ -14,6 +14,7 @@ public interface ITicketOrderService extends IService<TicketOrder> {
 
     ResponseEntity<Double> getRevenueByDateBetween(String startTime, String endTime);
 
+    double calculatorRevenue(List<TicketOrder> ticketOrders);
 
-
+    ResponseEntity<String> confirmOrderTicker(int orderId);
 }

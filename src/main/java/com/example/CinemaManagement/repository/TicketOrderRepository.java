@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface TicketOrderRepository extends JpaRepository<TicketOrder, Integer> {
-    @Query("SELECT to FROM TicketOrder to WHERE to.orderDate BETWEEN :startDate AND :endDate")
+    @Query("SELECT to FROM TicketOrder to WHERE to.orderDate BETWEEN :startDate AND :endDate AND to.status=1")
     List<TicketOrder> findAllByOrderDateBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query(value = "SELECT order_id, order_date, status, account_id, showtime_id " +
@@ -20,4 +20,6 @@ public interface TicketOrderRepository extends JpaRepository<TicketOrder, Intege
     List<TicketOrder> findByAccountId(int accountId);
 
     List<TicketOrder> findAllByPaymentDeadlineBeforeAndStatus(LocalDateTime paymentDeadline, OrderStatus status);
+
 }
+

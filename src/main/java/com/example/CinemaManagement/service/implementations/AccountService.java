@@ -162,14 +162,11 @@ public class AccountService implements IAccountService {
         }
     }
 
-    //Calculate and display payroll of all employees in the current month
-    //Including number of working days, number of working hours, and total salary
     public List<PayRollDTO> getPayrollAllEmployees() {
-        YearMonth currentMonth = YearMonth.now(); //Get the current month and year
-        LocalDate startOfMonth = currentMonth.atDay(1); // Get the first day of the current month
-        LocalDate endOfMonth = currentMonth.atEndOfMonth(); // Get the last day of the current month
+        YearMonth currentMonth = YearMonth.now();
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
 
-        // Get a list of all staff / admin accounts
         List<Account> employees = accountRepository.findAll().stream()
                 .filter(account -> account.getRoles() == AccountType.ROLE_EMPLOYEE ||
                         account.getRoles() == AccountType.ROLE_ADMINISTRATOR)
@@ -209,7 +206,6 @@ public class AccountService implements IAccountService {
         return payRollDTOList;
     }
 
-    //Calculate and display the payroll for a specific employee for the current month
     public PayRollDTO getPayrollForEmployee(Account account) {
         YearMonth currentMonth = YearMonth.now();
         LocalDate startOfMonth = currentMonth.atDay(1);
@@ -242,7 +238,6 @@ public class AccountService implements IAccountService {
         return new PayRollDTO(employee.getAccountId(), employee.getFullName(), totalDaysWorked, totalHoursWorked, totalSalary, hoursWorkerList);
     }
 
-    // 3. Display total salary of all employees
     public double getTotalSalaryForAllEmployees() {
         YearMonth currentMonth = YearMonth.now();
         LocalDate startOfMonth = currentMonth.atDay(1);
