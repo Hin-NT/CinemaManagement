@@ -28,13 +28,13 @@ public class FeedbackService implements IService<Feedback> {
     }
 
     @Override
-    public ResponseEntity<String> add(Feedback feedback) {
+    public ResponseEntity<Feedback> add(Feedback feedback) {
         try {
-            feedbackRepository.save(feedback);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Feedback added successfully!");
+            Feedback feedbackAdd = feedbackRepository.save(feedback);
+            return ResponseEntity.status(HttpStatus.CREATED).body(feedbackAdd);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to add feedback due to: " + e.getMessage());
+                    .body(new Feedback());
         }
     }
 

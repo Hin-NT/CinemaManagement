@@ -1,15 +1,15 @@
 package com.example.CinemaManagement.service.implementations;
 
 import com.example.CinemaManagement.config.Utils;
+import com.example.CinemaManagement.entity.ShowTimeSeat;
 import com.example.CinemaManagement.entity.TheaterSeat;
 import com.example.CinemaManagement.entity.TicketOrder;
 import com.example.CinemaManagement.entity.TicketOrderDetail;
 import com.example.CinemaManagement.enums.OrderStatus;
 import com.example.CinemaManagement.enums.SeatStatus;
-import com.example.CinemaManagement.repository.TheaterSeatRepository;
-import com.example.CinemaManagement.repository.TicketOrderDetailRepository;
-import com.example.CinemaManagement.repository.TicketOrderRepository;
+import com.example.CinemaManagement.repository.*;
 import com.example.CinemaManagement.service.interfaces.ITicketOrderService;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +36,9 @@ public class TicketOrderService implements ITicketOrderService {
 
     @Autowired
     TheaterSeatService theaterSeatService;
+
+    @Autowired
+    ShowTimeSeatRepository showTimeSeatRepository;
 
     @Override
     public List<TicketOrder> getAll() {
@@ -126,39 +129,49 @@ public class TicketOrderService implements ITicketOrderService {
 //    }
 
     @Override
-    public ResponseEntity<String> add(TicketOrder ticketOrder) {
+    public ResponseEntity<TicketOrder> add(TicketOrder ticketOrder) {
+        return ResponseEntity.ok(new TicketOrder());
+    }
+
+    @Override
+    public ResponseEntity<?> create(TicketOrder ticketOrder) {
         try {
+            // Tạo đối tượng TicketOrder mới
             TicketOrder ticketOrderData = new TicketOrder();
             ticketOrderData.setStatus(OrderStatus.PENDING);
             ticketOrderData.setOrderDate(LocalDateTime.now());
-            ticketOrderData.setPaymentDeadline(LocalDateTime.now().plusMinutes(1)); // Set payment deadline
-            ticketOrderData.setCode(Utils.encrypt(LocalDateTime.now() + String.valueOf(ticketOrder.getTicketOrderDetailList().get(0).getTheaterSeat().getId())));
+            ticketOrderData.setPaymentDeadline(LocalDateTime.now().plusMinutes(1)); 
+            ticketOrderData.setCode(Utils.encrypt(LocalDateTime.now() + String.valueOf(ticketOrder.getTicketOrderDetailList().get(0).getShowTimeSeat().getId())));
             ticketOrderData.setAccount(ticketOrder.getAccount());
             ticketOrderData.setShowtime(ticketOrder.getShowtime());
 
+            // Lưu TicketOrder
             TicketOrder ticketOrderSaved = ticketOrderRepository.save(ticketOrderData);
 
+            // Tạo danh sách TicketOrderDetail từ danh sách chi tiết đơn hàng
             List<TicketOrderDetail> ticketOrderDetailList = ticketOrder.getTicketOrderDetailList().stream()
                     .map(detail -> {
-                        TheaterSeat theaterSeat = theaterSeatRepository.findById(detail.getTheaterSeat().getId())
+                        ShowTimeSeat showTimeSeat = showTimeSeatRepository.findById(detail.getShowTimeSeat().getId())
                                 .orElseThrow(() -> new RuntimeException("Seat Not Found"));
 
-                        theaterSeat.setSeatStatus(SeatStatus.CHOOSING);
-                        theaterSeatRepository.save(theaterSeat);
-
                         TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId =
-                                new TicketOrderDetail.TicketOrderDetailId(ticketOrderSaved.getOrderId(), theaterSeat.getId());
+                                new TicketOrderDetail.TicketOrderDetailId(ticketOrderSaved.getOrderId(), showTimeSeat.getId());
 
                         TicketOrderDetail ticketOrderDetail = new TicketOrderDetail();
                         ticketOrderDetail.setId(ticketOrderDetailId);
-                        ticketOrderDetail.setTheaterSeat(theaterSeat);
+                        showTimeSeat.setSeatStatus(SeatStatus.CHOOSING);
+                        ticketOrderDetail.setShowTimeSeat(showTimeSeat);
                         ticketOrderDetail.setTicketOrder(ticketOrderSaved);
                         ticketOrderDetail.setPrice(detail.getPrice());
 
+
                         return ticketOrderDetail;
                     }).collect(Collectors.toList());
+
+            // Lưu tất cả TicketOrderDetail
             ticketOrderDetailRepository.saveAll(ticketOrderDetailList);
-            return ResponseEntity.status(HttpStatus.CREATED).body("TicketOrder created successfully!");
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(ticketOrderSaved.getOrderId());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -180,14 +193,13 @@ public class TicketOrderService implements ITicketOrderService {
 
             List<TicketOrderDetail> ticketOrderDetailList = ticketOrder.getTicketOrderDetailList().stream()
                     .map(detail -> {
-                        TheaterSeat theaterSeat = theaterSeatRepository.findById(detail.getTheaterSeat().getId())
+                        ShowTimeSeat showTimeSeat = showTimeSeatRepository.findById(detail.getShowTimeSeat().getId())
                                 .orElseThrow(() -> new RuntimeException("Seat Not Found"));
 
-                        TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId = new TicketOrderDetail.TicketOrderDetailId(ticketOrder.getOrderId(), theaterSeat.getId());
-
+                        TicketOrderDetail.TicketOrderDetailId ticketOrderDetailId = new TicketOrderDetail.TicketOrderDetailId(ticketOrder.getOrderId(), showTimeSeat.getId());
                         TicketOrderDetail ticketOrderDetail = new TicketOrderDetail();
                         ticketOrderDetail.setId(ticketOrderDetailId);
-                        ticketOrderDetail.setTheaterSeat(theaterSeat);
+                        ticketOrderDetail.setShowTimeSeat(showTimeSeat);
                         ticketOrderDetail.setTicketOrder(ticketOrderData);
                         ticketOrderDetail.setPrice(detail.getPrice());
 
@@ -263,11 +275,12 @@ public class TicketOrderService implements ITicketOrderService {
                     LocalDateTime.now(), OrderStatus.PENDING);
 
             for (TicketOrder order : expiredOrders) {
-                // Đặt lại trạng thái ghế cho các đơn hết hạn
+                // Cập nhật trạng thái cho từng chi tiết đơn hàng
                 for (TicketOrderDetail detail : order.getTicketOrderDetailList()) {
-                    TheaterSeat seat = detail.getTheaterSeat();
-                    seat.setSeatStatus(SeatStatus.EMPTY); // Đặt trạng thái ghế là EMPTY
-                    theaterSeatRepository.save(seat);
+
+                    ShowTimeSeat showTimeSeat = detail.getShowTimeSeat();
+                    showTimeSeat.setSeatStatus(SeatStatus.EMPTY);
+                    showTimeSeatRepository.save(showTimeSeat);
                 }
 
                 // Cập nhật trạng thái đơn hàng thành CANCELED
@@ -285,7 +298,10 @@ public class TicketOrderService implements ITicketOrderService {
 
         for (TicketOrder ticketOrder : ticketOrders) {
             for (TicketOrderDetail detail : ticketOrder.getTicketOrderDetailList()) {
-                totalRevenue += detail.getPrice();
+                if (ticketOrder.getStatus() != OrderStatus.CANCELED) {
+                    totalRevenue += detail.getPrice();
+                }
+//                totalRevenue += detail.getPrice();
             }
         }
         return totalRevenue;
@@ -300,19 +316,20 @@ public class TicketOrderService implements ITicketOrderService {
             ticketOrder.setOrderDate(LocalDateTime.now());
             ticketOrderRepository.save(ticketOrder);
 
-            List<TicketOrderDetail> ticketOrderDetail = ticketOrder.getTicketOrderDetailList();
-            for (TicketOrderDetail detail : ticketOrderDetail) {
-                TheaterSeat theaterSeat = detail.getTheaterSeat();
-                theaterSeat.setSeatStatus(SeatStatus.SELECTED);
-                theaterSeatRepository.save(theaterSeat);
+            List<TicketOrderDetail> ticketOrderDetailList = ticketOrder.getTicketOrderDetailList();
+
+            for (TicketOrderDetail detail : ticketOrderDetailList) {
+
+                ShowTimeSeat showTimeSeat = detail.getShowTimeSeat();
+                showTimeSeat.setSeatStatus(SeatStatus.SELECTED);
+
+                showTimeSeatRepository.save(showTimeSeat);
             }
 
             return ResponseEntity.status(HttpStatus.OK).body("Ticket Order updated successfully!");
-        }
-        else {
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket Order not found with ID: " + orderId);
         }
-
     }
 
 }

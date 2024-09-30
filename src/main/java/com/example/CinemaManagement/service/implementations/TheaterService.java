@@ -43,13 +43,13 @@ public class TheaterService implements ITheaterService {
     }
 
     @Override
-    public ResponseEntity<String> add(Theater theater) {
+    public ResponseEntity<Theater> add(Theater theater) {
         try {
-            theaterRepository.save(theater);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Theater added successfully!");
+            Theater theaterAdd = theaterRepository.save(theater);
+            return ResponseEntity.status(HttpStatus.CREATED).body(theaterAdd);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to add theater due to: " + e.getMessage());
+                    .body(new Theater());
         }
     }
 

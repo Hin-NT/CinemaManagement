@@ -32,7 +32,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ResponseEntity<String> add(Product product) {
+    public ResponseEntity<Product> add(Product product) {
         return null;
     }
 

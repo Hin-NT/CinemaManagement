@@ -1,5 +1,6 @@
 package com.example.CinemaManagement.service.implementations;
 
+import com.example.CinemaManagement.dto.TheaterSeatDTO;
 import com.example.CinemaManagement.entity.Seat;
 import com.example.CinemaManagement.entity.Theater;
 import com.example.CinemaManagement.entity.TheaterSeat;
@@ -20,8 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TheaterSeatService implements ITheaterSeatService {
@@ -46,13 +46,13 @@ public class TheaterSeatService implements ITheaterSeatService {
     }
 
     @Override
-    public ResponseEntity<String> add(TheaterSeat theaterSeat) {
+    public ResponseEntity<TheaterSeat> add(TheaterSeat theaterSeat) {
         try {
-            theaterSeatRepository.save(theaterSeat);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Seat added to Theater successfully!");
+            TheaterSeat theaterSeatAdd = theaterSeatRepository.save(theaterSeat);
+            return ResponseEntity.status(HttpStatus.CREATED).body(theaterSeatAdd);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to add seat due to: " + e.getMessage());
+                    .body(new TheaterSeat());
         }
     }
 
@@ -100,12 +100,8 @@ public class TheaterSeatService implements ITheaterSeatService {
     }
 
     @Override
-    public List<TheaterSeat> findSeatsByStatus(int threadID, SeatStatus statusSeat) {
-        return theaterSeatRepository.findSeatsByStatus(threadID, statusSeat);
-    }
-
-    @Override
-    public ResponseEntity<String> addSeatByFile(MultipartFile file) {
+    public ResponseEntity<?> addSeatByFile(MultipartFile file) {
+        List<TheaterSeat> theaterSeatsAdded = new ArrayList<TheaterSeat>();
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             for (Row row : sheet) {
@@ -146,15 +142,36 @@ public class TheaterSeatService implements ITheaterSeatService {
                             System.out.println("Seat not found");
                         }
 
-                        TheaterSeat theaterSeat = new TheaterSeat(new Seat(seatId), new Theater(theaterID), SeatType.values()[seatType], SeatStatus.EMPTY, price);
-                        theaterSeatRepository.save(theaterSeat);
+                        TheaterSeat theaterSeat = new TheaterSeat(new Seat(seatId), new Theater(theaterID), SeatType.values()[seatType], price);
+                        TheaterSeat theaterSeatAdded = theaterSeatRepository.save(theaterSeat);
+                        theaterSeatsAdded.add(theaterSeatAdded);
                     }
                 }
             }
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing file");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Seat added to Theater successfully!");
+        return ResponseEntity.status(HttpStatus.OK).body(theaterSeatsAdded);
+    }
+
+    @Override
+    public List<TheaterSeatDTO> getSeatCountByTheater() {
+        List<Object[]> results = theaterSeatRepository.countSeatsByTypeAndTheater();
+        Map<Integer, TheaterSeatDTO> seatCountMap = new HashMap<>();
+
+        for (Object[] result : results) {
+            Integer theaterId = (Integer) result[0];
+            String theaterName = (String) result[1];
+            SeatType seatType = (SeatType) result[2];
+            Long seatCount = (Long) result[3];
+
+            seatCountMap
+                    .computeIfAbsent(theaterId, k -> new TheaterSeatDTO(theaterId, theaterName, new HashMap<>()))
+                    .getSeatCounts()
+                    .put(seatType, seatCount.intValue());
+        }
+
+        return new ArrayList<>(seatCountMap.values());
     }
 
 }

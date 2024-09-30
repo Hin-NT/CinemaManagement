@@ -41,7 +41,7 @@ public class SeatController {
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
     @PostMapping("")
-    public ResponseEntity<String> createSeat(@Valid @RequestBody Seat seat) {
+    public ResponseEntity<?> createSeat(@Valid @RequestBody Seat seat) {
         return seatService.add(seat);
     }
 

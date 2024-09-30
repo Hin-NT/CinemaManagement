@@ -29,18 +29,13 @@ public class TheaterSeat {
     @Column(name = "seat_type")
     private SeatType seatType;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "seat_status")
-    private SeatStatus seatStatus;
-
     @Column(name = "price")
     private int price;
 
-    public TheaterSeat(Seat seat, Theater theater, SeatType seatType, SeatStatus seatStatus, int price) {
+    public TheaterSeat(Seat seat, Theater theater, SeatType seatType, int price) {
         this.seat = seat;
         this.theater = theater;
         this.seatType = seatType;
-        this.seatStatus = seatStatus;
         this.price = price;
     }
 

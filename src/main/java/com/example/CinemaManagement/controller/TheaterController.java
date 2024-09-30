@@ -30,7 +30,7 @@ public class TheaterController {
 
     // Create a new theater
     @PostMapping("")
-    public ResponseEntity<String> createTheater(@RequestBody Theater theater) {
+    public ResponseEntity<?> createTheater(@RequestBody Theater theater) {
         return theaterService.add(theater);
     }
 

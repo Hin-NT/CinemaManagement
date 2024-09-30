@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class Utils {
 
     private static final String PASSWORD_PATTERN =
-            "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{12,}$";
+            "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
 
     private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
@@ -17,7 +17,7 @@ public class Utils {
         return matcher.matches();
     }
 
-    private static BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private static BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
 
     public static String encrypt(String keyword) {
         return encoder.encode(keyword);

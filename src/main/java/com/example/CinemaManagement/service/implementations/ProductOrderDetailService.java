@@ -28,12 +28,12 @@ public class ProductOrderDetailService implements IService<ProductOrderDetail> {
     }
 
     @Override
-    public ResponseEntity<String> add(ProductOrderDetail product) {
+    public ResponseEntity<ProductOrderDetail> add(ProductOrderDetail product) {
         try {
-            repository.save(product);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Product Order Detail created successfully!");
+            ProductOrderDetail productOrderDetail = repository.save(product);
+            return ResponseEntity.status(HttpStatus.CREATED).body(productOrderDetail);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add Product Order Detail due to: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ProductOrderDetail());
         }
     }
 

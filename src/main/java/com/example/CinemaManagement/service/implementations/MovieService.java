@@ -1,14 +1,18 @@
 package com.example.CinemaManagement.service.implementations;
 
 import com.example.CinemaManagement.entity.Movie;
+import com.example.CinemaManagement.enums.MovieStatus;
 import com.example.CinemaManagement.repository.MovieRepository;
 import com.example.CinemaManagement.service.interfaces.IMovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +39,7 @@ public class MovieService implements IMovieService {
     }
 
     @Override
-    public ResponseEntity<String> add(Movie movie) {
+    public ResponseEntity<Movie> add(Movie movie) {
         return null;
     }
 
@@ -45,12 +49,28 @@ public class MovieService implements IMovieService {
     }
 
     @Override
-    public ResponseEntity<String> add(Movie movie, MultipartFile posterFile) {
+    public ResponseEntity<?> add(Movie movie, MultipartFile posterFile) {
         try {
             String imageUrl = cloudinaryService.uploadImage(posterFile);
+            System.out.println("Lưu ảnh thành công");
             movie.setPoster(imageUrl);
-            movieRepository.save(movie);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Movie created successfully!");
+
+            LocalDate today = LocalDate.now();
+
+            if (movie.getReleaseDate() != null && movie.getEndDate() != null) {
+                if (today.isBefore(movie.getReleaseDate())) {
+                    movie.setStatus(MovieStatus.COMING_SOON);
+                } else if (today.isAfter(movie.getEndDate())) {
+                    movie.setStatus(MovieStatus.FINISHED);
+                } else {
+                    movie.setStatus(MovieStatus.NOW_SHOWING);
+                }
+            } else {
+                movie.setStatus(MovieStatus.FINISHED);
+            }
+
+            Movie movieAdd = movieRepository.save(movie);
+            return ResponseEntity.status(HttpStatus.CREATED).body(movieAdd);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed  to add movie due to: " + e.getMessage());
         }
@@ -142,4 +162,27 @@ public class MovieService implements IMovieService {
         return movieRepository.findMoviesComingSoon();
     }
 
+
+    @Transactional
+    @Scheduled(fixedRate = 12 * 60 * 60 * 1000) // 12 tiếng (12 * 60 * 60 * 1000 milliseconds)
+    public void updateMovieStatuses() {
+        System.out.println("Vào cập nhập phim sắp chiếu");
+        LocalDate today = LocalDate.now();
+
+        List<Movie> allMovies = movieRepository.findAll();
+
+        for (Movie movie : allMovies) {
+            if (movie.getReleaseDate().isBefore(today) && movie.getEndDate().isAfter(today)) {
+                if (movie.getStatus() != MovieStatus.NOW_SHOWING) {
+                    movie.setStatus(MovieStatus.NOW_SHOWING);
+                    movieRepository.save(movie);
+                }
+            } else if (movie.getEndDate().isBefore(today)) {
+                if (movie.getStatus() != MovieStatus.FINISHED) {
+                    movie.setStatus(MovieStatus.FINISHED);
+                    movieRepository.save(movie);
+                }
+            }
+        }
+    }
 }

@@ -11,9 +11,9 @@ public class CloudinaryConfig {
     @Bean
     public Cloudinary cloudinary() {
         return new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "theater-mana",
-                "api_key", "913134193391771",
-                "api_secret", "MJ4N7l8YvD8cbToEmS1F-yEgHfI",
+                "cloud_name", "du4kvj6e3",
+                "api_key", "435791621522184",
+                "api_secret", "fedNaZJOGyfjxZpqzAeUQ5hV8O4",
                 "secure", true
         ));
     }

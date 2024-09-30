@@ -33,6 +33,9 @@ public class Showtime {
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
+    @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShowTimeSeat> showTimeSeats;
+
     @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL)
     private List<TicketOrder> ticketOrderList;
 

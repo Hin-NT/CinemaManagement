@@ -37,7 +37,7 @@ public class SupplierController {
     }
 
     @PostMapping("")
-    public ResponseEntity<String> createSupplier(@RequestBody Supplier supplier) {
+    public ResponseEntity<?> createSupplier(@RequestBody Supplier supplier) {
         return supplierService.add(supplier);
     }
 

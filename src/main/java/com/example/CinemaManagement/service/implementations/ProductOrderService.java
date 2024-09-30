@@ -44,7 +44,7 @@ public class ProductOrderService implements IProductOrderService {
     }
 
     @Override
-    public ResponseEntity<String> add(ProductOrder productOrder) {
+    public ResponseEntity<ProductOrder> add(ProductOrder productOrder) {
         try {
             ProductOrder data = new ProductOrder();
             data.setOrderDate(LocalDateTime.now());
@@ -69,9 +69,9 @@ public class ProductOrderService implements IProductOrderService {
                         return productOrderDetail;
                     }).collect(Collectors.toList());
             productOrderDetailRepository.saveAll(productOrderDetails);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Product created successfully!");
+            return ResponseEntity.status(HttpStatus.CREATED).body(productOrderSave);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add product due to: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ProductOrder());
         }
     }
 

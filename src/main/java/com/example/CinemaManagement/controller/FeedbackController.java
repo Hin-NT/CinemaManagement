@@ -34,7 +34,7 @@ public class FeedbackController {
     }
 
     @PostMapping("")
-    public ResponseEntity<String> createFeedback(@Valid @RequestBody Feedback feedback) {
+    public ResponseEntity<Feedback> createFeedback(@Valid @RequestBody Feedback feedback) {
         return feedbackService.add(feedback);
     }
 

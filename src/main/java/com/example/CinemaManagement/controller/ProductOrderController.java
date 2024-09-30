@@ -45,7 +45,7 @@ public class ProductOrderController {
     }
     @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @PostMapping("")
-    public ResponseEntity<String> createProductOrder(@Valid @RequestBody ProductOrder product) {
+    public ResponseEntity<?> createProductOrder(@Valid @RequestBody ProductOrder product) {
         return productOrderService.add(product);
     }
 

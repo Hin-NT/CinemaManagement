@@ -33,7 +33,7 @@ public class ProductOrderDetailController {
 //    }
 
     @PostMapping("")
-    public ResponseEntity<String> createProductOrder(@Valid @RequestBody ProductOrderDetail product) {
+    public ResponseEntity<ProductOrderDetail> createProductOrder(@Valid @RequestBody ProductOrderDetail product) {
         return productOrderDetailService.add(product);
     }
 

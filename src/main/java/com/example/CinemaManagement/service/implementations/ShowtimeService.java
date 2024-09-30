@@ -1,17 +1,25 @@
 package com.example.CinemaManagement.service.implementations;
 
-import com.example.CinemaManagement.entity.Movie;
-import com.example.CinemaManagement.entity.Showtime;
+import com.example.CinemaManagement.dto.ShowtimeDTO;
+import com.example.CinemaManagement.entity.*;
+import com.example.CinemaManagement.enums.SeatStatus;
+import com.example.CinemaManagement.repository.ShowTimeSeatRepository;
 import com.example.CinemaManagement.repository.ShowtimeRepository;
+import com.example.CinemaManagement.repository.TheaterRepository;
 import com.example.CinemaManagement.service.interfaces.IShowtimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ShowtimeService implements IShowtimeService {
@@ -21,6 +29,12 @@ public class ShowtimeService implements IShowtimeService {
 
     @Autowired
     private MovieService movieService;
+
+    @Autowired
+    private TheaterRepository theaterRepository;
+
+    @Autowired
+    private ShowTimeSeatRepository showTimeSeatRepository;
 
     @Override
     public List<Showtime> getAll() {
@@ -36,9 +50,31 @@ public class ShowtimeService implements IShowtimeService {
     public ResponseEntity<String> add(Showtime showtime) {
         try {
 
-            showtime.setEndTime(getEndTime(showtime));
+            int theaterId = showtime.getTheater().getTheaterId();
+            Theater theater = theaterRepository.findById(theaterId).orElse(null);
 
-            showtimeRepository.save(showtime);
+            if (theater == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Theater");
+            }
+            Movie movie = movieService.getById(showtime.getMovie());
+
+            LocalDateTime endTime = showtime.getStartTime().plusMinutes(movie.getDuration());
+            showtime.setEndTime(endTime);
+
+            List<Showtime> conflictingShowTimes = showtimeRepository.findConflictingShowTimes(theaterId, showtime.getStartTime(), endTime);
+
+            if (!conflictingShowTimes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("There is already a showtime scheduled during this period.");
+            }
+
+            Showtime showtimeAdded = showtimeRepository.save(showtime);
+
+            List<TheaterSeat> theaterSeats = theater.getTheaterSeats();
+            for (TheaterSeat theaterSeat : theaterSeats) {
+                ShowTimeSeat showTimeSeat = new ShowTimeSeat(showtimeAdded, theaterSeat, SeatStatus.EMPTY);
+                showTimeSeatRepository.save(showTimeSeat);
+            }
+
             return ResponseEntity.status(HttpStatus.CREATED).body("Showtime created successfully! ");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add seat due to: " + e.getMessage());
@@ -82,6 +118,31 @@ public class ShowtimeService implements IShowtimeService {
         return showtimeRepository.findAllByMovie(movieID);
     }
 
+    @Override
+    public Map<LocalDate, List<ShowtimeDTO>> getMoviesByShowDates() {
+        List<LocalDate> localDates = showtimeRepository.findAllUniqueShowDates().stream()
+                .map(Date::toLocalDate)
+                .toList();
+        for (LocalDate localDate : localDates) {
+            System.out.println("Ngày: " + localDate);
+        }
+
+        Map<LocalDate, List<ShowtimeDTO>> result = new HashMap<>();
+
+        for (LocalDate date : localDates) {
+            List<Showtime> showtimes = showtimeRepository.findShowTimesByDate(date);
+
+            List<ShowtimeDTO> showtimeDTOs = showtimes.stream()
+                    .map(showtime -> new ShowtimeDTO(showtime, 0))
+                    .collect(Collectors.toList());
+
+            result.put(date, showtimeDTOs);
+        }
+
+        return result;
+
+    }
+
     public List<Showtime> getShowTimesForMovieOnDate(int movieId, String date) {
 
         LocalDateTime dateTime = LocalDateTime.parse(date);
@@ -89,7 +150,6 @@ public class ShowtimeService implements IShowtimeService {
         LocalDateTime startTime = dateTime.toLocalDate().atStartOfDay(); // Bắt đầu ngày
         LocalDateTime endTime = dateTime.toLocalDate().atTime(23, 59, 59); // Kết thúc ngày
 
-        // Gọi phương thức trong repository để lấy lịch chiếu
         return showtimeRepository.findShowTimesByMovieIdAndDate(movieId, startTime, endTime);
     }
 
@@ -100,4 +160,13 @@ public class ShowtimeService implements IShowtimeService {
         return endTime;
     }
 
+    @Override
+    public Map<String, List<ShowtimeDTO>> getShowTimesForMovieOnDate(int movieId, LocalDate date) {
+        // Lấy tất cả suất chiếu cho bộ phim trong ngày và sắp xếp
+        List<Showtime> showtimes = showtimeRepository.findShowTimesByMovieIdAndDateSorted(movieId, date);
+
+        return showtimes.stream()
+                .map(ShowtimeDTO::new)
+                .collect(Collectors.groupingBy(showtimeDTO -> showtimeDTO.getTheater().getTheaterName()));
+    }
 }

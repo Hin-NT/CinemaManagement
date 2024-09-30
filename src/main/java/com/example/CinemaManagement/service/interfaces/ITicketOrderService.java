@@ -17,4 +17,6 @@ public interface ITicketOrderService extends IService<TicketOrder> {
     double calculatorRevenue(List<TicketOrder> ticketOrders);
 
     ResponseEntity<String> confirmOrderTicker(int orderId);
+
+    ResponseEntity<?> create(TicketOrder ticketOrder);
 }

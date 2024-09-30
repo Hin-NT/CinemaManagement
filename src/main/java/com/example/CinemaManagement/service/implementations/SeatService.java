@@ -28,13 +28,12 @@ public class SeatService implements ISeatService {
     }
 
     @Override
-    public ResponseEntity<String> add(Seat seat) {
+    public ResponseEntity<Seat> add(Seat seat) {
         try {
-            seatRepository.save(seat);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Seat added successfully!");
+            Seat seatAdd = seatRepository.save(seat);
+            return ResponseEntity.status(HttpStatus.CREATED).body(seatAdd);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to add seat due to: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Seat());
         }
     }
 

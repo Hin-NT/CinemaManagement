@@ -28,12 +28,12 @@ public class MovieOrderService implements IMovieOrderService {
     }
 
     @Override
-    public ResponseEntity<String> add(MovieOrder movieOrder) {
+    public ResponseEntity<MovieOrder> add(MovieOrder movieOrder) {
         try {
-            movieOrderRepository.save(movieOrder);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Movie created successfully!");
+            MovieOrder movieOrderAdd = movieOrderRepository.save(movieOrder);
+            return ResponseEntity.status(HttpStatus.CREATED).body(movieOrderAdd);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Movie already exists!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MovieOrder());
         }
     }
 

@@ -14,7 +14,7 @@ public interface IMovieService extends IService<Movie> {
 
     List<Movie> findMoviesComingSoon();
 
-    ResponseEntity<String> add(Movie p, MultipartFile file);
+    ResponseEntity<?> add(Movie p, MultipartFile file);
 
     ResponseEntity<String> update(Movie p, MultipartFile file);
 

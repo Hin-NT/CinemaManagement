@@ -34,7 +34,7 @@ public class MovieOrderController {
     }
 
     @PostMapping("")
-    public ResponseEntity<String> createMovieOrder(@Valid @RequestBody MovieOrder movieOrder) {
+    public ResponseEntity<?> createMovieOrder(@Valid @RequestBody MovieOrder movieOrder) {
         return movieOrderService.add(movieOrder);
     }
 

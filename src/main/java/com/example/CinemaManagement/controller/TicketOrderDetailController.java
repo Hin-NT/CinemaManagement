@@ -28,7 +28,7 @@ public class TicketOrderDetailController {
     }
 
     @PostMapping("")
-    public ResponseEntity<String> createTicketOrder(@RequestBody TicketOrderDetail ticketOrder) {
+    public ResponseEntity<TicketOrderDetail> createTicketOrder(@RequestBody TicketOrderDetail ticketOrder) {
         return ticketOrderDetailService.add(ticketOrder);
     }
 

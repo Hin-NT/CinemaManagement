@@ -17,7 +17,8 @@ public interface TimeKeepingRepository extends JpaRepository<TimeKeeping, Intege
                                                        @Param("start") LocalDateTime start,
                                                        @Param("end") LocalDateTime end);
 
-    @Query(value = "SELECT * FROM tbl_timekeeping tk WHERE tk.account_id = :accountId AND CONVERT(date, tk.start_time) = :currentDate", nativeQuery = true)
+    @Query(value = "SELECT * FROM tbl_timekeeping tk WHERE tk.account_id = :accountId AND DATE(tk.start_time) = :currentDate", nativeQuery = true)
     Optional<TimeKeeping> findByAccountIdAndCurrentDate(@Param("accountId") int accountId,
                                                         @Param("currentDate") LocalDate currentDate);
+
 }

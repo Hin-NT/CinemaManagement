@@ -28,12 +28,12 @@ public class SupplierService implements ISupplierService {
     }
 
     @Override
-    public ResponseEntity<String> add(Supplier supplier) {
+    public ResponseEntity<Supplier> add(Supplier supplier) {
         try {
-            supplierRepository.save(supplier);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Supplier created successfully");
+            Supplier supplierAdd = supplierRepository.save(supplier);
+            return ResponseEntity.status(HttpStatus.CREATED).body(supplierAdd);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add supplier due to: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Supplier());
         }
     }
 

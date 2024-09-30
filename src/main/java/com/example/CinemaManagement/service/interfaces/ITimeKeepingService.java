@@ -7,5 +7,5 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ITimeKeepingService extends IService<TimeKeeping> {
-    ResponseEntity<String> createOrUpdateTimeKeeping(Account account);
+    ResponseEntity<?> createOrUpdateTimeKeeping(Account account);
 }

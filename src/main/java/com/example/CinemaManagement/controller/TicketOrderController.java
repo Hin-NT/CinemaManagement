@@ -41,8 +41,8 @@ public class TicketOrderController {
 
     @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @PostMapping("")
-    public ResponseEntity<String> createTicketOrder(@RequestBody TicketOrder ticketOrder) {
-        return ticketOrderService.add(ticketOrder);
+    public ResponseEntity<?> createTicketOrder(@RequestBody TicketOrder ticketOrder) {
+        return ticketOrderService.create(ticketOrder);
     }
 
     @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_EMPLOYEE')")

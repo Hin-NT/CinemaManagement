@@ -9,7 +9,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -31,12 +33,12 @@ public class ShowtimeController {
         Showtime createrShowtime = new Showtime();
         createrShowtime.setShowtimeId(showtimeId);
         Showtime showtime = showtimeService.getById(createrShowtime);
-        return ResponseEntity.ok(new ShowtimeDTO(showtime, 1));
+        return ResponseEntity.ok(new ShowtimeDTO(showtime, 2));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
     @PostMapping("")
-    public ResponseEntity<String> createShowtime(@RequestBody Showtime showtime) {
+    public ResponseEntity<?> createShowtime(@RequestBody Showtime showtime) {
         System.out.println(showtime.getTheater().getTheaterId());
         return showtimeService.add(showtime);
     }
@@ -63,6 +65,17 @@ public class ShowtimeController {
         return ResponseEntity.ok(showtimeDTOList);
     }
 
+    @GetMapping("/by-dates")
+    public ResponseEntity<Map<LocalDate, List<ShowtimeDTO>>> getMoviesByShowDates() {
+        Map<LocalDate, List<ShowtimeDTO>> result = showtimeService.getMoviesByShowDates();
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/movie/{movieId}/date/{date}")
+    public Map<String, List<ShowtimeDTO>> getShowTimeByMovieAndDate(@PathVariable int movieId, @PathVariable String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return showtimeService.getShowTimesForMovieOnDate(movieId, localDate);
+    }
 //    @GetMapping("/movie")
 //    public ResponseEntity<List<ShowtimeDTO>> getAllShowTimesMovieAndDate(@RequestParam int movieId, @RequestParam String date) {
 //        List<Showtime> showtimeList = showtimeService.getShowTimesForMovieOnDate(movieId, date);

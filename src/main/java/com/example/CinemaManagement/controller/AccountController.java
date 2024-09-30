@@ -47,9 +47,7 @@ public class AccountController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Account account) {
-        if (account == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid account data.");
-        }
+        System.out.println(account.toString());
 
         if (account.getEmail() == null || account.getPassword() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email and password are required.");

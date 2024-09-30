@@ -2,6 +2,7 @@ package com.example.CinemaManagement.controller;
 
 import com.example.CinemaManagement.dto.TimeKeepingDTO;
 import com.example.CinemaManagement.entity.Account;
+import com.example.CinemaManagement.entity.Theater;
 import com.example.CinemaManagement.entity.TimeKeeping;
 import com.example.CinemaManagement.service.interfaces.ITimeKeepingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class TimeKeepingController {
     }
 
     @PostMapping("")
-    public ResponseEntity<String> createTimeKeeping(@RequestBody TimeKeeping timeKeeping) {
+    public ResponseEntity<?> createTimeKeeping(@RequestBody TimeKeeping timeKeeping) {
         return timeKeepingService.add(timeKeeping);
     }
 
@@ -45,7 +46,7 @@ public class TimeKeepingController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateTimeKeeping(@RequestBody Account account) {
+    public ResponseEntity<?> updateTimeKeeping(@RequestBody Account account) {
         return timeKeepingService.createOrUpdateTimeKeeping(account);
     }
 

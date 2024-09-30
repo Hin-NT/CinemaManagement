@@ -28,12 +28,12 @@ public class LabelService implements ILabelService {
     }
 
     @Override
-    public ResponseEntity<String> add(Label label) {
+    public ResponseEntity<Label> add(Label label) {
         try {
-            labelRepository.save(label);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Label created successfully!");
+            Label labelAdd = labelRepository.save(label);
+            return ResponseEntity.status(HttpStatus.CREATED).body(labelAdd);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add seat due to: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Label());
         }
     }
 

@@ -28,12 +28,12 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public ResponseEntity<String> add(Category category) {
+    public ResponseEntity<Category> add(Category category) {
         try {
-            categoryRepository.save(category);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Category added successfully!");
+            Category categoryAdded = categoryRepository.save(category);
+            return ResponseEntity.status(HttpStatus.CREATED).body(categoryAdded);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add seat due to: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Category());
         }
     }
 
@@ -42,13 +42,13 @@ public class CategoryService implements ICategoryService {
         Optional<Category> categoryOptional = categoryRepository.findById(category.getCategoryId());
         if (categoryOptional.isPresent()) {
             try {
-                categoryRepository.save(category);
-                return ResponseEntity.status(HttpStatus.OK).body("Category updated successfully!");
+                Category categoryUpdated = categoryRepository.save(category);
+                return ResponseEntity.status(HttpStatus.OK).body("Update category is success: " + categoryUpdated.getCategoryId());
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update seat due to: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update category is failure");
             }
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Update category failure because not found");
         }
     }
 

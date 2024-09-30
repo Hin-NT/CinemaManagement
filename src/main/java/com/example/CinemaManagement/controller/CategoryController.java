@@ -21,7 +21,7 @@ public class CategoryController {
     private ICategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<String> createCategory(@RequestBody Category category) {
+    public ResponseEntity<?> createCategory(@RequestBody Category category) {
         return categoryService.add(category);
     }
 

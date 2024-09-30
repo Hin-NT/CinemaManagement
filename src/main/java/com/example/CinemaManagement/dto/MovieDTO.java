@@ -22,8 +22,8 @@ public class MovieDTO {
     private String producer;
     private LocalDate releaseDate;
     private LocalDate endDate;
-    private int labelId;
-    private int status;
+    private LabelDTO label;
+    private String status;
     private Set<CategoryDTO> categories;
 
     public MovieDTO(Movie movie, int choose) {
@@ -38,8 +38,8 @@ public class MovieDTO {
         this.producer = movie.getProducer();
         this.releaseDate = movie.getReleaseDate();
         this.endDate = movie.getEndDate();
-        this.labelId = movie.getLabel().getLabelId();
-        this.status = movie.getStatus().ordinal();
+        this.label = new LabelDTO(movie.getLabel());
+        this.status = String.valueOf(movie.getStatus());
 
         if (choose == 1) {
             this.categories = movie.getCategories().stream()

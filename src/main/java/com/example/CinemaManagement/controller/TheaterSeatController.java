@@ -37,12 +37,12 @@ public class TheaterSeatController {
 
     // Create a new theater
     @PostMapping("")
-    public ResponseEntity<String> createTheater(@RequestBody TheaterSeat theaterSeat) {
+    public ResponseEntity<?> createTheater(@RequestBody TheaterSeat theaterSeat) {
         return theaterSeatService.add(theaterSeat);
     }
 
     @PostMapping("/save/upload")
-    public ResponseEntity<String> createTheaterSeatByFileUpload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> createTheaterSeatByFileUpload(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
         }
@@ -99,19 +99,8 @@ public class TheaterSeatController {
         return ResponseEntity.ok(accountDTOList);
     }
 
-    // Find seats by status
-    @GetMapping("/status")
-    public ResponseEntity<List<TheaterSeatDTO>> findSeatsByStatus(@RequestParam int theaterId, @RequestParam int status) {
-        SeatStatus seatStatus;
-
-        try {
-            seatStatus = SeatStatus.values()[status];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return ResponseEntity.badRequest().body(List.of());
-        }
-        List<TheaterSeat> seats = theaterSeatService.findSeatsByStatus(theaterId, seatStatus);
-        List<TheaterSeatDTO> accountDTOList = seats.stream().map(TheaterSeatDTO::new).toList();
-        return ResponseEntity.ok(accountDTOList);
+    @GetMapping("/seat-count")
+    public List<TheaterSeatDTO> getSeatCount() {
+        return theaterSeatService.getSeatCountByTheater();
     }
-
 }

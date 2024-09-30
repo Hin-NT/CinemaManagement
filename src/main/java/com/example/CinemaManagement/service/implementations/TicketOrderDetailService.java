@@ -27,12 +27,12 @@ public class TicketOrderDetailService implements IService<TicketOrderDetail> {
     }
 
     @Override
-    public ResponseEntity<String> add(TicketOrderDetail ticketOrder) {
+    public ResponseEntity<TicketOrderDetail> add(TicketOrderDetail ticketOrder) {
         try {
-            ticketOrderDetailRepository.save(ticketOrder);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Ticket Order Detail created successfully!");
+            TicketOrderDetail ticketOrderDetail = ticketOrderDetailRepository.save(ticketOrder);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ticketOrderDetail);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new TicketOrderDetail());
         }
     }
 

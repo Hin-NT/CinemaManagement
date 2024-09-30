@@ -52,9 +52,9 @@ public class MovieController {
         return ResponseEntity.ok(movieDTOList);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMINISTRATOR')")
     @PostMapping("")
-    public ResponseEntity<String> createMovie(
+    public ResponseEntity<?> createMovie(
             @RequestParam("title") String title,
             @RequestParam("duration") int duration,
             @RequestParam("posterFile") MultipartFile posterFile,

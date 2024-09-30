@@ -4,11 +4,13 @@ import com.example.CinemaManagement.entity.Account;
 import com.example.CinemaManagement.entity.TimeKeeping;
 import com.example.CinemaManagement.repository.TimeKeepingRepository;
 import com.example.CinemaManagement.service.interfaces.ITimeKeepingService;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,11 +33,11 @@ public class TimeKeepingService implements ITimeKeepingService {
     }
 
     @Override
-    public ResponseEntity<String> add(TimeKeeping timeKeeping) {
+    public ResponseEntity<?> add(TimeKeeping timeKeeping) {
         try {
             if (timeKeeping.getAccount() == null) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Failed to create TimeKeeping due to account not found");
+                        .body(new TimeKeeping());
             }
 
             LocalDateTime time = LocalDateTime.now();
@@ -43,10 +45,10 @@ public class TimeKeepingService implements ITimeKeepingService {
             timeKeeping.setStartTime(time);
             timeKeeping.setEndTime(time);
 
-            timeKeepingRepository.save(timeKeeping);
-            return ResponseEntity.status(HttpStatus.CREATED).body("TimeKeeping created successfully!");
+            TimeKeeping timeKeepingAdd = timeKeepingRepository.save(timeKeeping);
+            return ResponseEntity.status(HttpStatus.CREATED).body(timeKeepingAdd);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new TimeKeeping());
         }
     }
 
@@ -97,8 +99,7 @@ public class TimeKeepingService implements ITimeKeepingService {
     }
 
     @Override
-    public ResponseEntity<String> createOrUpdateTimeKeeping(Account account) {
-
+    public ResponseEntity<?> createOrUpdateTimeKeeping(Account account) {
         LocalDate now = LocalDate.now();
         Optional<TimeKeeping> timeKeepingOptional = timeKeepingRepository.findByAccountIdAndCurrentDate(account.getAccountId(), now);
 

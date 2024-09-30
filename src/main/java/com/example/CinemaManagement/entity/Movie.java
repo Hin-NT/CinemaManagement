@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -33,8 +34,7 @@ public class Movie {
     @Column(name = "trailer")
     private String trailer;
 
-    @Lob
-    @Column(name = "description")
+    @Column(name = "description", length = 2000)
     private String description;
 
     @Column(name = "director")

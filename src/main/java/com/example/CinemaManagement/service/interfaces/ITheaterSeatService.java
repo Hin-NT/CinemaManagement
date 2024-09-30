@@ -1,5 +1,6 @@
 package com.example.CinemaManagement.service.interfaces;
 
+import com.example.CinemaManagement.dto.TheaterSeatDTO;
 import com.example.CinemaManagement.entity.TheaterSeat;
 import com.example.CinemaManagement.enums.SeatStatus;
 import com.example.CinemaManagement.enums.SeatType;
@@ -13,8 +14,7 @@ public interface ITheaterSeatService extends IService<TheaterSeat> {
 
     List<TheaterSeat> findSeatsByType(int threadID, SeatType seatType);
 
-    List<TheaterSeat> findSeatsByStatus(int threadID, SeatStatus statusSeat);
+    ResponseEntity<?> addSeatByFile(MultipartFile file);
 
-    ResponseEntity<String> addSeatByFile(MultipartFile file);
-
+    List<TheaterSeatDTO> getSeatCountByTheater();
 }

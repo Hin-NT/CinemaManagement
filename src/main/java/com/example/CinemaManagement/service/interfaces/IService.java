@@ -9,7 +9,7 @@ public interface IService<T> {
 
     public T getById(T t);
 
-    public ResponseEntity<String> add(T t);
+    public ResponseEntity<?> add(T t);
 
     public ResponseEntity<String> update(T t);
 

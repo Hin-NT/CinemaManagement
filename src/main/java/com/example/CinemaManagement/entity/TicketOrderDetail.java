@@ -21,9 +21,9 @@ public class TicketOrderDetail {
     private double price;
 
     @ManyToOne
-    @MapsId("theaterSeatId") // Use the correct field name for mapping
-    @JoinColumn(name = "theater_seat_id", insertable = false, updatable = false) // Adjusted to match the field name
-    private TheaterSeat theaterSeat;
+    @MapsId("showtimeSeatId") // Use the correct field name for mapping
+    @JoinColumn(name = "showtime_seat_id", insertable = false, updatable = false) // Adjusted to match the field name
+    private ShowTimeSeat showTimeSeat;
 
     @ManyToOne
     @MapsId("orderId") // Correct mapping
@@ -40,14 +40,14 @@ public class TicketOrderDetail {
         @Column(name = "order_id")
         private int orderId;
 
-        @Column(name = "theater_seat_id")
-        private int theaterSeatId;
+        @Column(name = "showtime_seat_id")
+        private int showtimeSeatId;
 
         public TicketOrderDetailId() {}
 
         public TicketOrderDetailId(int orderId, int theaterSeatId) {
             this.orderId = orderId;
-            this.theaterSeatId = theaterSeatId;
+            this.showtimeSeatId = theaterSeatId;
         }
 
         public int getOrderId() {
@@ -59,11 +59,11 @@ public class TicketOrderDetail {
         }
 
         public int getSeatId() {
-            return theaterSeatId;
+            return showtimeSeatId;
         }
 
         public void setSeatId(int seatId) {
-            this.theaterSeatId = seatId;
+            this.showtimeSeatId = seatId;
         }
 
         @Override
@@ -71,13 +71,13 @@ public class TicketOrderDetail {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             TicketOrderDetailId that = (TicketOrderDetailId) o;
-            return orderId == that.orderId && theaterSeatId == that.theaterSeatId; // Corrected logic
+            return orderId == that.orderId && showtimeSeatId == that.showtimeSeatId; // Corrected logic
         }
 
         @Override
         public int hashCode() {
             int result = Integer.hashCode(orderId);
-            result = 31 * result + Integer.hashCode(theaterSeatId); // Corrected method
+            result = 31 * result + Integer.hashCode(showtimeSeatId); // Corrected method
             return result;
         }
     }
